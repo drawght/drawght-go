@@ -27,10 +27,42 @@ func Parse(template string, data map[string]interface{}) (result string) {
 
 func ParseQueries(template string, data map[string]interface{}) (result string) {
 	lines := eol.Split(template, -1)
-	for i := 0; i < len(lines); i++ {
-		lines[i] = ParseKeys(lines[i], data)
+	resultLines := make([]string, len(lines))
+
+	for l := 0; l < len(lines); l++ {
+		line := lines[l]
+		queries := listPattern.FindAllString(lines[l], -1)
+		resultLines[l] = line
+		if len(queries) > 0 {
+			keyCleaner := regexp.MustCompile(fmt.Sprintf("[%s%s]", PREFIX, SUFFIX))
+			for q := 0; q < len(queries); q++ {
+				query := queries[q]
+				if listPattern.MatchString(query) {
+					key := keyCleaner.ReplaceAllString(query, "")
+					filter := strings.Split(key, QUERY)
+					list := filter[0]
+					key = filter[1]
+					queryCleaner := regexp.MustCompile(fmt.Sprintf("%s%s", list, QUERY))
+					if value := getValueFromKey(list, data); value != nil {
+						switch value.(type) {
+							case []interface{}:
+								list := value.([]interface{})
+								partial := queryCleaner.ReplaceAllString(line, "")
+								parsedLines := make([]string, len(list))
+								for l := 0; l < len(list); l++ {
+									parsedLines[l] = fmt.Sprintf("%v", ParseTemplate(partial, list[l].(map[string]interface{})))
+								}
+								resultLines[l] = strings.Join(parsedLines[:], "\n")
+							default:
+								resultLines[l] = fmt.Sprintf("%v", value)
+						}
+					}
+				}
+			}
+		}
 	}
-	return strings.Join(lines[:], "\n")
+
+	return strings.Join(resultLines[:], "\n")
 }
 
 func ParseKeys(template string, data map[string]interface{}) (result string) {

@@ -86,6 +86,15 @@ func TestParseQueryItems(t *testing.T) {
 	testParse(drawght.ParseKeys, t, templatesWithQueries, getDataset())
 }
 
+func TestParseQueryLists(t *testing.T) {
+	var templatesWithQueries = map[string]string {
+		"- {references:name} {references:url}": "- Mustache //mustache.github.io\n- Handlebars //handlebarsjs.com",
+		"- [{author.networks:name}]({author.networks:url})": "- [Dev.to](//dev.to/hallison)\n- [Github](//github.com/hallison)\n- [Twitter](//twitter.com/hallison)",
+	}
+
+	testParse(drawght.ParseQueries, t, templatesWithQueries, getDataset())
+}
+
 func TestParse(t *testing.T) {
 	t.Skip("Not implemented, yet")
 }
