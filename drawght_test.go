@@ -71,7 +71,10 @@ func TestParseQueries(t *testing.T) {
 	var dataset = getDataset()
 	var templatesWithQueries = map[string]string {
 		"# {title} written by {author.name}": "# Drawght is a very useful sketch written by Hallison Batista",
-		"- {references:name}": "- Mustache\n- Handlebars",
+		"- {references#1.name}": "- Mustache",
+		"- {references#2.name}": "- Handlebars",
+		"- {references#3.name}": "- {references#3.name}",
+		"- {tags}": "- Template\n- Draft",
 	}
 
 	templateLines := make([]string, len(templatesWithQueries))

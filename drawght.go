@@ -5,11 +5,12 @@ import (
 	"regexp"
 	"reflect"
 	"strings"
+	"strconv"
 )
 
 const (
 	PREFIX, ATTRIBUTE, QUERY, ITEM, SUFFIX = "{", ".", ":", "#", "}"
-	KEY, LIST, INDEX = "(.*?)", "(?P<list>.*?)", "(?P<index>.*?)"
+	KEY, LIST, INDEX = "(.*?)", "(.*?)", "(.*?)"
 )
 
 
@@ -17,6 +18,7 @@ var (
 	eol = regexp.MustCompile("\r?\n")
 	keyPattern = regexp.MustCompile(PREFIX + KEY + SUFFIX)
 	listPattern = regexp.MustCompile(PREFIX + LIST + QUERY + KEY + SUFFIX)
+	itemPattern = regexp.MustCompile(LIST + ITEM + INDEX)
 )
 
 func Parse(template string, data map[string]interface{}) (result string) {
@@ -59,7 +61,7 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 			list := reflect.ValueOf(value)
 			lines := make([]string, list.Len())
 			for i := 0; i < list.Len(); i++ {
-				lines[i] = parser.ReplaceAllString(template, list.Index(i).String());
+				lines[i] = parser.ReplaceAllString(template, fmt.Sprintf("%v", list.Index(i)));
 			}
 			result = strings.Join(lines[:], "\n")
 		} else {
@@ -71,18 +73,34 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 }
 
 func getValueFromKey(nestedKey string, data map[string]interface{}) (value interface{}) {
+	query := data
 	if keys := strings.Split(nestedKey, ATTRIBUTE); len(keys) > 1 {
-		value = data[keys[0]]
-		mapPattern := regexp.MustCompile(`map\[string\]*`)
-		for i := 1; i < len(keys); i++ {
-			valueType := fmt.Sprintf("%T", value)
-			if mapPattern.MatchString(valueType) {
-				value = getValueFromKey(keys[i], value.(map[string]interface{}))
+		for i := 0; i < len(keys); i++ {
+			key, index := keys[i], -1
+
+			if itemPattern.MatchString(key) {
+				item := strings.Split(key, ITEM)
+				key = item[0]
+				index, _ = strconv.Atoi(item[1])
+				list := query[key].([]interface{})
+				if index <= len(list) {
+					value = list[index - 1]
+				} else {
+					value = nil
+				}
 			} else {
-				return nil
+				value = query[key]
+			}
+
+			switch value.(type) {
+				case map[string]interface{}:
+					query = value.(map[string]interface{})
+				case []interface{}:
+					value = value.([]interface{})
+				default:
+					value = value
 			}
 		}
-
 		return value
 	}
 
