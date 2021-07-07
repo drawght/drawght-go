@@ -3,6 +3,8 @@ package drawght
 import (
 	"fmt"
 	"regexp"
+	"reflect"
+	"strings"
 )
 
 const (
@@ -44,7 +46,16 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 
 		if value == nil { value = templateKey }
 
-		result = parser.ReplaceAllString(result, value.(string))
+		if reflect.TypeOf(value).Kind() == reflect.Slice {
+			list := reflect.ValueOf(value)
+			lines := make([]string, list.Len())
+			for i := 0; i < list.Len(); i++ {
+				lines[i] = parser.ReplaceAllString(template, list.Index(i).String());
+			}
+			result = strings.Join(lines[:], "\n")
+		} else {
+			result = parser.ReplaceAllString(result, value.(string))
+		}
 	}
 
 	return result;
