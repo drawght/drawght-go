@@ -3,6 +3,8 @@ package drawght_test
 import "github.com/drawght/drawght-parser-go"
 
 import (
+	"io/ioutil"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"testing"
@@ -65,6 +67,50 @@ func TestParseKeys(t *testing.T) {
 	}
 }
 
+func TestParseQueries(t *testing.T) {
+	var dataset = getDataset()
+	var templatesWithQueries = map[string]string {
+		"# {title} written by {author.name}": "# Drawght is a very useful sketch written by Hallison Batista",
+		"- {references:name}": "- Mustache\n- Handlebars",
+	}
+
+	templateLines := make([]string, len(templatesWithQueries))
+	expectedLines := make([]string, len(templatesWithQueries))
+
+	i := 0
+	for template, expected := range(templatesWithQueries) {
+		templateLines[i] = template
+		expectedLines[i] = expected
+		i++
+	}
+
+	template := strings.Join(templateLines[:], "\n\n")
+	expected := strings.Join(expectedLines[:], "\n\n")
+
+	result := drawght.ParseQueries(template, dataset)
+
+	if result != expected {
+		t.Errorf("Template not parsed")
+		t.Errorf("Template:\n%v\n", template)
+		t.Errorf("Expected:\n%v\n", expected)
+		t.Errorf("Result:\n%v\n", result)
+	}
+}
+
 func TestParse(t *testing.T) {
 	t.Skip("Not implemented, yet")
+}
+
+func getDataset() (dataset map[string]interface{}) {
+	jsonContent, fail := ioutil.ReadFile("example.json")
+	if fail != nil {
+		fmt.Println(fail)
+	}
+
+	fail = json.Unmarshal(jsonContent, &dataset)
+	if fail != nil {
+		fmt.Println(fail)
+	}
+
+	return dataset
 }
