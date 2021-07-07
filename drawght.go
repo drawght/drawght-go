@@ -69,7 +69,7 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 }
 
 func getValueFromKey(nestedKey string, data map[string]interface{}) (value interface{}) {
-	query := data
+	dataset := data
 	if keys := strings.Split(nestedKey, ATTRIBUTE); len(keys) > 1 {
 		for i := 0; i < len(keys); i++ {
 			key, index := keys[i], -1
@@ -78,19 +78,19 @@ func getValueFromKey(nestedKey string, data map[string]interface{}) (value inter
 				item := strings.Split(key, ITEM)
 				key = item[0]
 				index, _ = strconv.Atoi(item[1])
-				list := query[key].([]interface{})
+				list := dataset[key].([]interface{})
 				if index <= len(list) {
 					value = list[index - 1]
 				} else {
 					value = nil
 				}
 			} else {
-				value = query[key]
+				value = dataset[key]
 			}
 
 			switch value.(type) {
 				case map[string]interface{}:
-					query = value.(map[string]interface{})
+					dataset = value.(map[string]interface{})
 				case []interface{}:
 					value = value.([]interface{})
 				default:
