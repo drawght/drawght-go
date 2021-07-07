@@ -16,6 +16,7 @@ const (
 var (
 	eol = regexp.MustCompile("\r?\n")
 	keyPattern = regexp.MustCompile(PREFIX + KEY + SUFFIX)
+	listPattern = regexp.MustCompile(PREFIX + LIST + QUERY + KEY + SUFFIX)
 )
 
 func Parse(template string, data map[string]interface{}) (result string) {
@@ -23,7 +24,11 @@ func Parse(template string, data map[string]interface{}) (result string) {
 }
 
 func ParseQueries(template string, data map[string]interface{}) (result string) {
-	return ""
+	lines := eol.Split(template, -1)
+	for i := 0; i < len(lines); i++ {
+		lines[i] = ParseKeys(lines[i], data)
+	}
+	return strings.Join(lines[:], "\n")
 }
 
 func ParseKeys(template string, data map[string]interface{}) (result string) {
@@ -65,7 +70,23 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 	return result;
 }
 
-func getValueFromKey(key string, data map[string]interface{}) (value interface{}) {
-	value = data[key]
+func getValueFromKey(nestedKey string, data map[string]interface{}) (value interface{}) {
+	if keys := strings.Split(nestedKey, ATTRIBUTE); len(keys) > 1 {
+		value = data[keys[0]]
+		mapPattern := regexp.MustCompile(`map\[string\]*`)
+		for i := 1; i < len(keys); i++ {
+			valueType := fmt.Sprintf("%T", value)
+			if mapPattern.MatchString(valueType) {
+				value = getValueFromKey(keys[i], value.(map[string]interface{}))
+			} else {
+				return nil
+			}
+		}
+
+		return value
+	}
+
+	value = data[nestedKey]
+
 	return value
 }
