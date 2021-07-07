@@ -29,7 +29,7 @@ func ParseKeys(template string, data map[string]interface{}) (result string) {
 }
 
 func ParseTemplate(template string, data map[string]interface{}) (result string) {
-  result = template
+	result = template
 	templateKeys := keyPattern.FindAllString(template, -1)
 	for _, templateKey := range templateKeys {
 		var (
@@ -37,7 +37,7 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 			parser = regexp.MustCompile(templateKey)
 		)
 
-    var (
+		var (
 			key = cleaner.ReplaceAllString(templateKey, "")
 			value = getValueFromKey(key, data)
 		)
@@ -45,9 +45,9 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 		if value == nil { value = templateKey }
 
 		result = parser.ReplaceAllString(result, value.(string))
-  }
+	}
 
-  return result;
+	return result;
 }
 
 func getValueFromKey(key string, data map[string]interface{}) (value interface{}) {
