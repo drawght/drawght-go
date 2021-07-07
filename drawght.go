@@ -44,16 +44,12 @@ func ParseKeys(template string, data map[string]interface{}) (result string) {
 func ParseTemplate(template string, data map[string]interface{}) (result string) {
 	result = template
 	templateKeys := keyPattern.FindAllString(template, -1)
-	for _, templateKey := range templateKeys {
-		var (
-			cleaner = regexp.MustCompile(fmt.Sprintf("[%s%s]", PREFIX, SUFFIX))
-			parser = regexp.MustCompile(templateKey)
-		)
+	cleaner := regexp.MustCompile(fmt.Sprintf("[%s%s]", PREFIX, SUFFIX))
 
-		var (
-			key = cleaner.ReplaceAllString(templateKey, "")
-			value = getValueFromKey(key, data)
-		)
+	for _, templateKey := range templateKeys {
+		parser := regexp.MustCompile(templateKey)
+		key := cleaner.ReplaceAllString(templateKey, "")
+		value := getValueFromKey(key, data)
 
 		if value == nil { value = templateKey }
 
