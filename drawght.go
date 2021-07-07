@@ -14,7 +14,7 @@ const (
 
 
 var (
-	eol = regexp.MustCompile("/\r?\n/")
+	eol = regexp.MustCompile("\r?\n")
 	keyPattern = regexp.MustCompile(PREFIX + KEY + SUFFIX)
 )
 
@@ -27,7 +27,11 @@ func ParseQueries(template string, data map[string]interface{}) (result string) 
 }
 
 func ParseKeys(template string, data map[string]interface{}) (result string) {
-	return ParseTemplate(template, data)
+	lines := eol.Split(template, -1)
+	for i := 0; i < len(lines); i++ {
+		lines[i] = ParseTemplate(lines[i], data)
+	}
+	return strings.Join(lines[:], "\n")
 }
 
 func ParseTemplate(template string, data map[string]interface{}) (result string) {

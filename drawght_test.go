@@ -17,7 +17,7 @@ var dataset = map[string]interface{} {
 	},
 }
 
-var templates = map[string]string {
+var templatesWithKeysOnly = map[string]string {
 	"<h1>{title}</h1>": fmt.Sprintf("<h1>%s</h1>", dataset["title"]),
 	"# {title} written by {author}": fmt.Sprintf("# %s written by %s", dataset["title"], dataset["author"]),
 	"- {tags}": "",
@@ -30,14 +30,38 @@ func TestParseTemplate(t *testing.T) {
 		tagsSlice[i] = fmt.Sprintf("- %s", tag)
 	}
 
-	templates["- {tags}"] = strings.Join(tagsSlice[:], "\n")
+	templatesWithKeysOnly["- {tags}"] = strings.Join(tagsSlice[:], "\n")
 
-	for template, expected := range(templates) {
+	for template, expected := range(templatesWithKeysOnly) {
 		result := drawght.ParseTemplate(template, dataset)
 
 		if (result != expected) {
 			t.Errorf("Template '%s' not parsed", template)
 		}
+	}
+}
+
+func TestParseKeys(t *testing.T) {
+	templateLines := make([]string, len(templatesWithKeysOnly))
+	expectedLines := make([]string, len(templatesWithKeysOnly))
+
+	i := 0
+	for template, expected := range(templatesWithKeysOnly) {
+		templateLines[i] = template
+		expectedLines[i] = expected
+		i++
+	}
+
+	template := strings.Join(templateLines[:], "\n\n")
+	expected := strings.Join(expectedLines[:], "\n\n")
+
+	result := drawght.ParseKeys(template, dataset)
+
+	if result != expected {
+		t.Errorf("Template not parsed")
+		t.Errorf("Template:\n%v\n", template)
+		t.Errorf("Expected:\n%v\n", expected)
+		t.Errorf("Result:\n%v\n", result)
 	}
 }
 
