@@ -80,6 +80,7 @@ func TestParseQueryItems(t *testing.T) {
 		"- {references#1.name}": "- Mustache",
 		"- {references#2.name}": "- Handlebars",
 		"- {references#3.name}": "- {references#3.name}",
+		"- {tags#1}": "- Template",
 		"- {tags}": "- Template\n- Draft",
 	}
 

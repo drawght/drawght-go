@@ -102,7 +102,7 @@ func ParseTemplate(template string, data map[string]interface{}) (result string)
 
 func getValueFromKey(nestedKey string, data map[string]interface{}) (value interface{}) {
 	dataset := data
-	if keys := strings.Split(nestedKey, ATTRIBUTE); len(keys) > 1 {
+	if keys := strings.Split(nestedKey, ATTRIBUTE); len(keys) >= 1 {
 		for i := 0; i < len(keys); i++ {
 			key, index := keys[i], -1
 
