@@ -97,7 +97,16 @@ func TestParseQueryLists(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	t.Skip("Not implemented, yet")
+	template := getTemplate()
+	expected := getExpected()
+	result := drawght.Parse(template, getDataset())
+
+	if result != expected {
+		t.Errorf("Template not parsed")
+		t.Errorf("Template:\n%v\n", template)
+		t.Errorf("Expected:\n%v\n", expected)
+		t.Errorf("Result:\n%v\n", result)
+	}
 }
 
 func getDataset() (dataset map[string]interface{}) {
@@ -136,4 +145,21 @@ func testParse(parse func(string, map[string]interface{})(string), t *testing.T,
 		t.Errorf("Expected:\n%v\n", expected)
 		t.Errorf("Result:\n%v\n", result)
 	}
+}
+
+func getTemplate() (template string) {
+	return readFile("example.in")
+}
+
+func getExpected() (expected string) {
+	return readFile("example.out")
+}
+
+func readFile(filename string) (string) {
+	lines, fail := ioutil.ReadFile(filename)
+	if fail != nil {
+		fmt.Println(fail)
+	}
+
+	return string(lines)
 }
