@@ -23,6 +23,8 @@ author:
 creation-date: 2021-06-28
 publishing date: 2021-07-01
 references:
+- name: JSON Template
+  url: //code.google.com/archive/p/json-template
 - name: Mustache
   url: //mustache.github.io
 - name: Handlebars
@@ -78,6 +80,7 @@ Acompanhe as novidades em [Dev.to](//dev.to/hallison).
 
 A sintaxe foi inspirada por:
 
+- [JSON Template](//code.google.com/archive/p/json-template)
 - [Mustache](//mustache.github.io)
 - [Handlebars](//handlebarsjs.com)
 
@@ -157,6 +160,7 @@ A sintaxe foi inspirada por:
 </p>
 
 <ul>
+  <li><a href="//code.google.com/archive/p/json-template">JSON Template</a></li>
   <li><a href="//mustache.github.io">Mustache</a></li>
   <li><a href="//handlebarsjs.com">Handlebars</a></li>
 </ul>
