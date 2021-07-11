@@ -20,6 +20,9 @@
   "publishing date": "2021-07-01",
   "references": [
     {
+      "name": "JSON Template",
+      "url": "//code.google.com/archive/p/json-template"
+    }, {
       "name": "Mustache",
       "url": "//mustache.github.io"
     } , {

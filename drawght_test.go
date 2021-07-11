@@ -77,9 +77,9 @@ func TestParseQueryKeys(t *testing.T) {
 
 func TestParseQueryItems(t *testing.T) {
 	var templatesWithQueries = map[string]string {
-		"- {references#1.name}": "- Mustache",
-		"- {references#2.name}": "- Handlebars",
-		"- {references#3.name}": "- {references#3.name}",
+		"- {references#2.name}": "- Mustache",
+		"- {references#3.name}": "- Handlebars",
+		"- {references#4.name}": "- {references#4.name}",
 		"- {tags#1}": "- Template",
 		"- {tags}": "- Template\n- Draft",
 	}
@@ -89,7 +89,7 @@ func TestParseQueryItems(t *testing.T) {
 
 func TestParseQueryLists(t *testing.T) {
 	var templatesWithQueries = map[string]string {
-		"- {references:name} {references:url}": "- Mustache //mustache.github.io\n- Handlebars //handlebarsjs.com",
+		"- {references:name} {references:url}": "- JSON Template //code.google.com/archive/p/json-template\n- Mustache //mustache.github.io\n- Handlebars //handlebarsjs.com",
 		"- [{author.networks:name}]({author.networks:url})": "- [Dev.to](//dev.to/hallison)\n- [Github](//github.com/hallison)\n- [Twitter](//twitter.com/hallison)",
 	}
 
